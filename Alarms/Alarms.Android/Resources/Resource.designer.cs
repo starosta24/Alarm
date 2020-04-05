@@ -3291,6 +3291,9 @@ namespace Alarms.Droid
 			// aapt resource value: 0x7f090018
 			public const int line3 = 2131296280;
 			
+			// aapt resource value: 0x7f090099
+			public const int linearLayout = 2131296409;
+			
 			// aapt resource value: 0x7f09001d
 			public const int listMode = 2131296285;
 			
@@ -3587,9 +3590,6 @@ namespace Alarms.Droid
 			
 			// aapt resource value: 0x7f0900c0
 			public const int time = 2131296448;
-			
-			// aapt resource value: 0x7f090099
-			public const int time_display = 2131296409;
 			
 			// aapt resource value: 0x7f09001c
 			public const int title = 2131296284;
