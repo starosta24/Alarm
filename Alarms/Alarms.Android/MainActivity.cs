@@ -32,34 +32,46 @@ namespace TimePickerDemo
        
         Android.Widget.Button timeSelectButton;
         LinearLayout mainLayout;
-        int i = 0; //номер TextView с временем
-        bool butClick = false;
-        
+        int i = 0; //номер TextView 
+        bool butClick = true;
+        TextView nextText;
         
         void handler(object sender, EventArgs args)
         {
             
             var textView = (TextView)sender;
             
-            if (textView.Text == "Включен")
+            if (butClick==false)
             {
-                msg1.Visibility = Android.Views.ViewStates.Visible;
-                //textView.Text = "Выключен";
+                
+                for (int j = 0; j < textViews.Length; j++)
+                {
+                    if (textViews[j] == textView)
+                    {
+                        nextText = textViews[j + 1];
+                        nextText.Visibility = Android.Views.ViewStates.Visible;
+                        break;
+                    }
+                    else
+                    {
+                        continue;
+                    }
+                }
                 textView.Enabled = false;
                 butClick = false;
+
             }
             else
             {
                 textView.Enabled = true;
                 // textView.Text = "Включен";
                 butClick = true;
+                nextText.Visibility = Android.Views.ViewStates.Invisible;
 
             }
             
-            
-
         }
-
+        
 
 
         protected override void OnCreate(Bundle bundle)
@@ -74,32 +86,38 @@ namespace TimePickerDemo
         }
         public delegate void CallTextClick(object sender, EventArgs args);
 
+
         public TextView msg1;
+        string textTime;
+        TextView[] textViews = new TextView[13];
+
         void TimeSelectOnClick(object sender, EventArgs eventArgs)
         {
-            
             TimePickerFragment frag = TimePickerFragment.NewInstance(
                                       delegate (DateTime time)
                                       {
-                                          i++;
                                           TextView msg = new TextView(this);
                                           msg.Text = time.ToShortTimeString();
                                           msg.TextSize = 55;
                                           msg.Clickable = true;
                                           msg.Enabled = true;
-                                          msg.Click += handler;
-                                          
-                                          mainLayout.AddView(msg);
-
+                                          butClick=!butClick;
                                           msg1 = new TextView(this);
                                           msg1.Text = "Выключен";
                                           msg1.TextSize = 20;
                                           msg1.Visibility = Android.Views.ViewStates.Invisible;
-                                          //msg1.Click += handler;
+                                          msg1.Clickable = true;
+                                          
+                                          textViews[i] = msg;
+                                          i++;
+                                          textViews[i] = msg1;
+                                          i++;
+                                          mainLayout.AddView(msg);
                                           mainLayout.AddView(msg1);
-
-
-
+                                          
+                                          msg.Click += handler;
+                                          textTime = msg.Text;
+                                          
                                       });
                                       
 
