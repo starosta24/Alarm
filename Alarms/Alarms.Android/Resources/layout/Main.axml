@@ -16,7 +16,7 @@
 			android:paddingRight="24dp"
 			android:layout_width="60dp"
 			android:layout_height="60dp"
-			android:layout_gravity="center_horizontal|bottom"
+			android:layout_gravity="center_horizontal|right"
 			android:background = "@drawable/plus"
 			android:layout_marginTop="0.0dp"
 			android:layout_marginLeft="0.0dp" 

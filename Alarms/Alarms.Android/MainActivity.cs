@@ -7,6 +7,8 @@ using Android.Text.Format;
 using Alarms.Droid;
 using Xamarin.Forms;
 using Android.Content;
+using System.Collections.Generic;
+using Android.Views;
 
 
 //<TextView
@@ -24,51 +26,87 @@ using Android.Content;
 
 namespace TimePickerDemo
 {
-    [Activity(Label = "Будильник" , MainLauncher = true, Icon = "@drawable/icon")]
+    [Activity(Label = "Будильник" , MainLauncher=true, Icon = "@drawable/icon")]
     public class MainActivity : Activity
     {
-        TextView timeDisplay;
+       
         Android.Widget.Button timeSelectButton;
         LinearLayout mainLayout;
+        int i = 0; //номер TextView с временем
+        bool butClick = false;
+        
+        
+        void handler(object sender, EventArgs args)
+        {
+            
+            var textView = (TextView)sender;
+            
+            if (textView.Text == "Включен")
+            {
+                msg1.Visibility = Android.Views.ViewStates.Visible;
+                //textView.Text = "Выключен";
+                textView.Enabled = false;
+                butClick = false;
+            }
+            else
+            {
+                textView.Enabled = true;
+                // textView.Text = "Включен";
+                butClick = true;
+
+            }
+            
+            
+
+        }
+
+
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
             SetContentView(Resource.Layout.Main);
-            var tDisp = "@time_display";
-            var but = "@select_button";
-            
-           // timeDisplay = FindViewById<TextView>(Resource.Id.time_display);
+
             timeSelectButton = FindViewById<Android.Widget.Button>(Resource.Id.select_button);
-            
-
             mainLayout = (LinearLayout)FindViewById(Resource.Id.linearLayout);
-            timeSelectButton.Click += TimeSelectOnClick;       
-            
+            timeSelectButton.Click += TimeSelectOnClick;
+
         }
+        public delegate void CallTextClick(object sender, EventArgs args);
 
-        
-
+        public TextView msg1;
         void TimeSelectOnClick(object sender, EventArgs eventArgs)
         {
-           
+            
             TimePickerFragment frag = TimePickerFragment.NewInstance(
                                       delegate (DateTime time)
                                       {
-                                         
-                                          var msg = new TextView(this)
-                                          {
-                                              Text = time.ToShortTimeString(),
-                                              Gravity = Android.Views.GravityFlags.Top,
-                                              TextSize = 55
-                                          };
+                                          i++;
+                                          TextView msg = new TextView(this);
+                                          msg.Text = time.ToShortTimeString();
+                                          msg.TextSize = 55;
+                                          msg.Clickable = true;
+                                          msg.Enabled = true;
+                                          msg.Click += handler;
+                                          
                                           mainLayout.AddView(msg);
+
+                                          msg1 = new TextView(this);
+                                          msg1.Text = "Выключен";
+                                          msg1.TextSize = 20;
+                                          msg1.Visibility = Android.Views.ViewStates.Invisible;
+                                          //msg1.Click += handler;
+                                          mainLayout.AddView(msg1);
+
+
+
                                       });
-
-
+                                      
 
             frag.Show(FragmentManager, TimePickerFragment.TAG);
         }
+
+       
     }
 
 
