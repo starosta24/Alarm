@@ -9,19 +9,7 @@ using Xamarin.Forms;
 using Android.Content;
 using System.Collections.Generic;
 using Android.Views;
-
-
-//<TextView
-//        android:id="@+id/time_display"
-//		android:layout_height="568.0dp"
-//		android:layout_width="match_parent"
-//		android:paddingTop="22dp"
-//		android:text=""
-//		android:textSize="55dp"
-//		android:layout_marginBottom="71.5dp" 
-//	/>
-
-
+using Xamarin.Forms.Platform.Android;
 
 
 namespace TimePickerDemo
@@ -33,54 +21,50 @@ namespace TimePickerDemo
         Android.Widget.Button timeSelectButton;
         LinearLayout mainLayout;
         int i = 0; //номер TextView 
-        bool butClick = true;
+        
         TextView nextText;
         
         void handler(object sender, EventArgs args)
-        {
-            
+        {                                 
             var textView = (TextView)sender;
-            
-            if (butClick==false)
-            {
-                
+ 
                 for (int j = 0; j < textViews.Length; j++)
                 {
                     if (textViews[j] == textView)
                     {
                         nextText = textViews[j + 1];
-                        nextText.Visibility = Android.Views.ViewStates.Visible;
+                        if(nextText.Visibility == Android.Views.ViewStates.Visible) //если кнопка выключена
+                        {
+                            nextText.Visibility = Android.Views.ViewStates.Invisible;   //не видно "выкл"
+                            textView.SetTextColor(Xamarin.Forms.Color.Gray.ToAndroid());    //цвет цифр на visible=true
+                            //тут пишем обработик для самого будильника
+                        }
+                        else //если вкл
+                        {
+                            nextText.Visibility = Android.Views.ViewStates.Visible;
+                            textView.SetTextColor(Xamarin.Forms.Color.LightGray.ToAndroid());
+                        }
                         break;
                     }
-                    else
+                    else //пока не найдет нужный "вкл"
                     {
                         continue;
                     }
                 }
-                textView.Enabled = false;
-                butClick = false;
-
-            }
-            else
-            {
-                textView.Enabled = true;
-                // textView.Text = "Включен";
-                butClick = true;
-                nextText.Visibility = Android.Views.ViewStates.Invisible;
-
-            }
-            
+                
         }
+            
+        
         
 
 
         protected override void OnCreate(Bundle bundle)
         {
             base.OnCreate(bundle);
-            SetContentView(Resource.Layout.Main);
+            SetContentView(Alarms.Droid.Resource.Layout.Main);
 
-            timeSelectButton = FindViewById<Android.Widget.Button>(Resource.Id.select_button);
-            mainLayout = (LinearLayout)FindViewById(Resource.Id.linearLayout);
+            timeSelectButton = FindViewById<Android.Widget.Button>(Alarms.Droid.Resource.Id.select_button);
+            mainLayout = (LinearLayout)FindViewById(Alarms.Droid.Resource.Id.linearLayout);
             timeSelectButton.Click += TimeSelectOnClick;
 
         }
@@ -88,7 +72,6 @@ namespace TimePickerDemo
 
 
         public TextView msg1;
-        string textTime;
         TextView[] textViews = new TextView[13];
 
         void TimeSelectOnClick(object sender, EventArgs eventArgs)
@@ -96,27 +79,29 @@ namespace TimePickerDemo
             TimePickerFragment frag = TimePickerFragment.NewInstance(
                                       delegate (DateTime time)
                                       {
+                                          //создаем для показа времени
                                           TextView msg = new TextView(this);
                                           msg.Text = time.ToShortTimeString();
                                           msg.TextSize = 55;
                                           msg.Clickable = true;
                                           msg.Enabled = true;
-                                          butClick=!butClick;
+                                          //создаем для показа вкл/выкл
                                           msg1 = new TextView(this);
                                           msg1.Text = "Выключен";
                                           msg1.TextSize = 20;
-                                          msg1.Visibility = Android.Views.ViewStates.Invisible;
+                                          msg1.Visibility = Android.Views.ViewStates.Invisible; //не видно
                                           msg1.Clickable = true;
-                                          
+                                          //добавляем в массив
                                           textViews[i] = msg;
                                           i++;
                                           textViews[i] = msg1;
                                           i++;
+                                          //добавляем на экран
                                           mainLayout.AddView(msg);
                                           mainLayout.AddView(msg1);
                                           
                                           msg.Click += handler;
-                                          textTime = msg.Text;
+                                         
                                           
                                       });
                                       
